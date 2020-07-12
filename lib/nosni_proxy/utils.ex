@@ -54,6 +54,9 @@ defmodule NosniProxy.Utils do
 
       File.write!(Path.join(path, "#{name}.pem"), X509.Certificate.to_pem(ca))
       File.write!(Path.join(path, "#{name}_key.pem"), X509.PrivateKey.to_pem(ca_key))
+      # crt file for windows users
+      File.write!(Path.join(path, "#{name}.crt"), X509.Certificate.to_der(ca))
+
       {:ca, ca, ca_key}
     end
   end
@@ -100,7 +103,7 @@ defmodule NosniProxy.Utils do
       File.write!("cache/#{subject}.der", cert_der)
       File.write!("cache/#{subject}_key.der", key_der)
 
-      Logger.info("Spoofed cert for #{subject}")
+      Logger.debug("Spoofed cert for #{subject}")
 
       {:ok, cert_der, key_der}
     end
@@ -158,6 +161,14 @@ defmodule NosniProxy.Utils do
 
       {:ok, http_data} ->
         {:ok, :http, http_data}
+    end
+  end
+
+  def connect_ssl_remote(host, port, opts \\ []) do
+    if opts[:sni] do
+      Socket.SSL.connect(host, port, server_name: opts[:sni])
+    else
+      Socket.SSL.connect(host, port, server_name: "gmail.com")
     end
   end
 

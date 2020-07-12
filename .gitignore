@@ -20,6 +20,7 @@ erl_crash.dump
 *.ez
 
 *.pem
+*.crt
 
 /cache
 

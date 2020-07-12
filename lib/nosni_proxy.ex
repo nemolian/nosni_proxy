@@ -38,7 +38,7 @@ defmodule NosniProxy do
              host_ip <- secure_arecord_resolve!(host),
              {:ok, cert, key} <- get_or_create_cert(ca, host),
              {:remote_connect, {:ok, remote}} <-
-               {:remote_connect, Socket.SSL.connect(host_ip, port)},
+               {:remote_connect, connect_ssl_remote(host_ip, port)},
              {:verify_cert, :ok} <- {:verify_cert, verify_cert(host, remote)},
              :ok <- :gen_tcp.send(request, "HTTP/1.1 200\r\n\r\n"),
              {:user_handshake, {:ok, request_ssl}} <-
